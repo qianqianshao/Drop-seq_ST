@@ -1,1 +1,1 @@
-This lists scripts used to analyze the Drop-seq data of adult mouse seminiferous tubule and generate figures for my upcoming paper. 
+Here lists scripts used to analyze the Drop-seq data of adult mouse seminiferous tubule and generate figures for my upcoming paper titled "A comprehensive roadmap of murine spermatogenesis defined by single-cell RNA-seq". 
