@@ -89,7 +89,7 @@ MultiPlotList(list(plot1,plot2),cols = 2)
 dev.off()
    
 
-### 09.23.2017 Highly Variable Genes and PCA
+###### 09.23.2017 Highly Variable Genes and PCA
 pdf(paste(dgefile,"dge_VariableGenes0.2.pdf",sep=""),height=7.5,width=11)
 dge=MeanVarPlot(dge,y.cutoff = 0.2,x.low.cutoff = 0.2,x.high.cutoff=10,y.high.cutoff=30,fxn.x = expMean,fxn.y = logVarDivMean,do.text=FALSE)    # x-axis: average expression; y-axis: dispersion, SD
 points(data.x[pass.cutoff],data.norm.y[pass.cutoff],col="green3",pch=20,cex=0.6)
@@ -99,7 +99,7 @@ dev.off()
 length(dge@var.genes)
 # 2047 y.cutoff=0.2
 
-### PCA for all germ cells with >1k genes using Highly Variable Genes
+###### PCA for all germ cells with >1k genes using Highly Variable Genes
 dgefile="figAug2017_MouseAdultST24_ReCluster24GermClustersLargeCells1kgenes/HVG_"
 dge=SetAllIdent(dge,id="GermClusters")
 
@@ -117,7 +117,7 @@ dev.off()
    
 
 ### Scree Plot for PCA for all germ cells with >1k genes using HVG
-numPCs=40
+numPCs=24 # HVG
 i=1
 pdf(paste(dgefile,"dge_PCA_Variablel_variation.pdf",sep=""))
 par(mar=c(4,4,1,1),mgp=c(2.5, 1, 0))
@@ -141,9 +141,14 @@ abline(v=eigenvalue,col="red",lwd=2,lty=2)
 text(eigenvalue+0.3,0.8,col="red",paste(numPCs[i],"PCs"))
 dev.off()
      
-
-### run tSNE using top PCs
+###### Louvain-Jaccard clustering and tSNE using top PCs
+j=1
+print(j)
 dge=RunTSNE(dge,dims.use = 1:numPCs[j],do.fast=T)    # max_iter=2000
+dge <- FindClusters(dge, pc.use = 1:numPCs[j], resolution = seq(0.1,2,0.1), print.output = 0, save.SNN = T)
+
+dge24HVG=dge
+save(dge,file=paste0(home,"data_DGE/24GermClusters1kgenes_ReScaled_HVG.Robj"))
 
 
 ######### Subset reclustering for Non-SPG germ cells with >1k genes
