@@ -1,5 +1,5 @@
 ### R script to generate 12 ordered germ cell clusters in Oct 2017 by Qianyi
-### Related to Figure 2A: PCA plot for germ cells with >1k genes
+### Related to Figure 2 and S2: germ cells with >1k genes
 
 ### load file path and libraries
 home="/scratch/junzli_flux/qzm/Dropseq_analysis/"
@@ -417,7 +417,7 @@ dge@pca.obj[[1]]$x[,2]=-dge@pca.obj[[1]]$x[,2]
 pdf(paste(dgefile,"dge_tSNE_SPG45new9clusters.pdf",sep=""),height=6,width=6.5)
 TSNEPlot(dge,pt.size=1,do.label=T,label.size=8)
 PCAPlot(dge,pt.size=1,do.label=T)
-PCAPlot(dge,1,3,pt.size=1,do.label=T)
+PCAPlot(dge,1,3,pt.size=1,do.label=T) # this is Figure 2A
 PCAPlot(dge,1,4,pt.size=1,do.label=T)
 PCAPlot(dge,1,5,pt.size=1,do.label=T)
 PCAPlot(dge,1,6,pt.size=1,do.label=T)
@@ -425,6 +425,244 @@ PCAPlot(dge,1,7,pt.size=1,do.label=T)
 dev.off()
 # save as Figure 2A
     
-   
+
+######### Visualize representative known markers for germ cell types in Figure 2C
+### 11.28.2017 known germ cell markers 
+gene1=c("Zbtb16","Sall4","Sohlh1","Id4","Gfra1","Uchl1","Kit","Stra8","Prdm9")
+gene2=c("H2afx","Spo11","Hormad1","Piwil1","Sycp3","Spag6","Mns1","Tbpl1","Acrv1","Tssk1","Tnp1","Prm1","Pgk2","Hspa1l")
+genes=c(gene1,gene2)
+setname="Markers"
+
+### color scheme
+redblue100.alpha<-rgb(read.table("/scratch/junzli_flux/qzm/Dropseq_analysis/data_DGE/redblue100.txt",sep='\t',row.names=1,header=T),alpha=0.8)
+
+PC=3;object=dge;
+
+for(j in 1:length(genes)){
+feature=features.plot=genes[j]
+features.plot; dim.1 = 1; dim.2 = 2; cells.use = NULL; pt.size = 1;
+pch.use = 16; reduction.use = "tsne";
+use.imputed = FALSE; no.axes = TRUE; no.legend = FALSE
+
+cells.use <- set.ifnull(cells.use, colnames(object@data))
+dim.code <- translate.dim.code(reduction.use)
+dim.codes <- paste(dim.code, c(dim.1, dim.2), sep = "")
+data.plot <- FetchData(object, dim.codes, cells.use = cells.use)
+
+x1 <- paste(dim.code, dim.1, sep = "")
+x2 <- paste(dim.code, dim.2, sep = "")
+
+data.plot$x <- data.plot[, x1]
+data.plot$y <- data.plot[, x2]
+data.plot$pt.size <- pt.size
+data.use <- data.frame(t(FetchData(object, features.plot, cells.use = cells.use,
+use.imputed = use.imputed)))
+data.gene0 <- na.omit(data.frame(data.use[features.plot, ]))
+data.plot$gene <- t(data.gene0)
+st6<- data.plot
+st6<-st6[order(st6[,6]),]
+z<-st6[,6]
+
+### plot heatmap for expression of known markers for germ cells
+jpeg(paste0(dgename,setname,"_",feature,"_redblue0.8.jpeg"),height=1700,width=1600,res=300)
+par(mar=c(0.5,0.5,2,0.5),mgp=c(1,0.5,0))
+z<-st6[,6]
+zcolor <- redblue100.alpha[(z - min(z))/diff(range(z))*100 + 1]
+plot(st6[,1],st6[,2], col=zcolor,pch=19,cex=0.3,cex.main=1.5,axes=F,main=features.plot,xlab="",ylab="")
+dev.off()
+
+### To maximize red color, use the same color for top 1% of expression for each marker
+z<-st6[,6]
+top=0.99
+top1percent=round(dim(st6)[1]*top,0):dim(st6)[1]
+top1n=length(top1percent)
+top1=quantile(z,top)
+max=diff(range(z))
+z=z[which(z<top1)]
+jpeg(paste0(dgename,setname,"_",feature,"_top1percent.jpeg"),height=1700,width=1600,res=300)
+par(mar=c(0.5,0.5,2,0.5),mgp=c(1,0.5,0))
+zcolor <- redblue100.alpha[c((z - min(z))/diff(range(z))*100 + 1, rep(100,top1n))]
+plot(st6[,1],st6[,2], col=zcolor,pch=19,cex=0.3,cex.main=1.5,axes=F,main=features.plot,xlab="",ylab="")
+dev.off()
+}
+# save as Figure 2C
+
+
+###### mark transition populations in 12 germ cell clusters
+dge=dge24HVG
+dge=SetAllIdent(dge,id="SPG45new9clusters")
+germ=levels(dge@ident)
+### transtion (cluster 2,3,7,11) from 12 germ cell clusters with large cells 
+transition=c(2,3,7,11)
+nonts=germ[-transition]
+dge@data.info$SPG45new9Transition=rep(NA,length(dge@data.info$SPG45new9clusters))
+levels(dge@data.info$SPG45new9Transition)=c("GermNonTs","Transition")
+dge@data.info$SPG45new9Transition[which(dge@data.info$SPG45new9clusters %in% nonts)] <- "GermNonTs"
+dge@data.info$SPG45new9Transition[which(dge@data.info$SPG45new9clusters %in% transition)] <- "Transition"
+save(dge,file=paste0(home,"data_DGE/24GermClusters1kgenes_ReScaled_HVG.Robj"))
+dge24HVG=dge
+
+dge=SetAllIdent(dge,id="SPG45new9Transition")
+table(dge@ident) 
+# GermNonTs Transition 
+#     16903       3743
+
+myBrewerPalette=c("grey70","forestgreen")
+pdf(paste0(dgefile,"PCA_GermTransition.pdf"),width=7.5,height=6)
+PCAPlot(dge,1,2,do.return = TRUE,pt.size = 1,do.label=F)
+PCAPlot(dge,1,3,do.return = TRUE,pt.size = 1,do.label=F) # this is insert for Figure 2C
+TSNEPlot(dge,do.return=TRUE,pt.size = 1,do.label=F)
+dev.off()
+# save as insert for Figure 2C
+
+
+######### Rank correlation for germ cells ordered by 12 germ cell clusters
+### order cells by 12 germ cell clusters and randomly shuffle cells within each cluster
+ident=dge@ident
+levels=levels(dge@ident)
+cells=sort(ident)
+cells.use=NULL
+for(i in 1:length(levels)){
+   set.seed(i)
+   tmp=cells[which(cells == levels[i])]
+   if(length(tmp)>0){
+      tmpname=sample(names(tmp),length(tmp),replace=FALSE)
+      cells.use=c(cells.use,tmpname)
+   }
+}
+cells.ident=as.factor(cells)
+names(cells.ident)=cells.use
+levels(cells.ident)=levels
+
+###### Rank correlation for 12 germ cell cluster centroids - Figure 2B
+### for each cluster, calculate average normalized expression of each gene
+tmpdge=data.frame(t(as.matrix(dge@data[,cells.use])))
+# make sure same order for cells.ident and dge before combining
+which(names(cells.ident)!=colnames(dge@data)[cells.use])  # nothing
+mouseclustersall=data.frame(ident=cells.ident,t(as.matrix(dge@data[,cells.use])))
+genecountsall=matrix(,dim(dge@data)[1],length(unique(mouseclustersall$ident)))
+rownames(genecountsall)=rownames(dge@data)
+colnames(genecountsall)=unique(mouseclustersall$ident)
+for(i in unique(mouseclustersall$ident)){
+    genecountsall[,i]=apply(mouseclustersall[mouseclustersall$ident==i,-1],2,function(x) expMean(as.numeric(x))) # log(mean(exp(x) - 1) + 1)
+    print(i)
+}
+
+### Calculate correlation for each normalized centroid
+cc=cor(as.matrix(genecountsall),method="spearman")
+dim(cc)
+min(cc)
+
+### labeling for axis 
+data.use=cc[levels,levels]
+colsep.use=cumsum(table(gsub("_.*","",levels)))
+col.lab=rep("",length(levels))
+col.lab[round(cumsum(table(gsub("_.*","",levels)))-table(gsub("_.*","",levels))/2)+0]=unique(gsub("_.*","",levels))
+row.lab=gsub(".*_","",levels)
+
+ncluster=length(levels)
+sidecol=matrix(0,2,length(levels))
+sidecol[1,]=rep(rep(c("white","white"),each=12),3)[1:sum(ncluster)]
+sidecol[2,]=myBrewerPalette[1:sum(ncluster)]
+clab=cbind(sidecol[2,],sidecol[1,])
+rlab=sidecol
+rownames(rlab)=c("","Cluster")
+colnames(clab)=c("Cluster","")
+
+### color scheme
+col.use=redblue100
+
+### heatmap of rank correlation for 12 germ cell cluster centroids
+pdf(file=paste(dgename,"Centroid_RankedCorrelation_",res[resi],".pdf",sep=""),height=5.5,width=5)
+par(mar=c(4,4,1,1),mgp=c(2.5, 1, 0))
+heatmap.3(data.use,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use,colsep = colsep.use,rowsep=colsep.use,sepcolor="black",sepwidth=c(0.001,0.001),RowSideColors=rlab,ColSideColors=clab,labCol=col.lab,labRow=row.lab,cexCol=0.8,cexRow=1,ColSideColorsSize = 1.5,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F, scale="none",margins=c(7,3))
+dev.off()
+# save as Figure 2B
+
+                            
+###### Rank correlation for germ cells with >1k genes ordered by 12 germ cell clusters - Figure S2A left panel
+### Caculate rank correlation for germ cells with >1k genes
+length(dge@var.genes) # 2047
+nrho=cor(as.matrix(dge@data[dge@var.genes,]),method="spearman")
+dim(nrho) # 20646
+
+### rank correlation for germ cells ordered by 12 germ cell clusters
+            data.use2=rho[cells.use,cells.use]
+            data.use2=minmax(data.use2,min=disp.min,max=disp.max)
+
+### labeling for axis
+            lab2=rep("",length(cells.use))
+            lab2[round(cumsum(table(cells.ident)[levels(cells.ident)])-table(cells.ident)[levels(cells.ident)]/2)+15]=levels(cells.ident)
+
+            row.lab2=gsub(".*_","",lab2)
+
+            orig.ident=factor(gsub("_.*","",cells.ident),levels=unique(gsub("_.*","",cells.ident)))
+            col.lab2=rep("",length(cells.use))
+            col.lab2[round(cumsum(table(orig.ident)[levels(orig.ident)])-table(orig.ident)[levels(orig.ident)]/2)+15]=levels(orig.ident)
+
+            colsep.use2=cumsum(table(orig.ident)[levels(orig.ident)]) # draw a line between datasets
+
+sidecol2=do.call(rbind,strsplit(as.character(cells.ident),"_"))
+sidecol2=cbind(sidecol2,sidecol2)
+for(rep in 1:length(unique(sidecol2[,1]))){
+a=unique(sidecol2[,1])[rep]
+sidecol2[which(sidecol2[,1]==a),2]<-rep
+}
+rlab2=rbind(c("white")[as.numeric(sidecol2[,1])],myBrewerPalette[as.numeric(sidecol2[,2])])
+clab2=cbind(rlab2[2,],rlab2[1,])
+rownames(rlab2)=c("","Cluster")
+colnames(clab2)=c("Cluster","")
+
+### modify color scheme
+midrange=median(testcor[which(testcor!=1)])
+maxrange=max(testcor[which(testcor!=1)])
+maxrange
+midrange2=maxrange/2
+maxrange2=maxrange
+col.use2=redblue100[c(rep(1:50,each=round(midrange2*100)),rep(50:100,each=round((maxrange2-midrange2)*100)),rep(100,50*round((1-maxrange2)*100)))]
+length(col.use2)
+
+### heatmap of rank correlation for germ cells ordered by 12 germ cell clusters
+jpeg(file=paste(dgename,"RankedCorrelation.jpeg",sep=""),height=3000,width=3000,res=300)
+par(mar=c(10,4,1,2),mgp=c(2.5, 1, 0))
+heatmap.3(data.use2,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use2,colsep = colsep.use2,rowsep=colsep.use2,sepcolor="black",sepwidth=c(0.01,0.01),RowSideColors=rlab2,ColSideColors=clab2,labCol=col.lab2,labRow=row.lab2,cexCol=2,cexRow=2,ColSideColorsSize = 1.5,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F,scale="none",margins=c(7,5))                    # symm=F,symkey=F,symbreaks=F,
+dev.off()
+# save as Figure S2A left panel
+
+                            
+###### Jaccard distance for germ cells with >1k genes ordered by 12 germ cell clusters - Figure S2A right panel
+### Jaccard distance for germ cells ordered by 12 germ cell clusters
+            data.use2=dge@snn.dense[cells.use,cells.use]
+            data.use2=minmax(data.use2,min=disp.min,max=disp.max)
+
+### labeling for axis
+            lab2=rep("",length(cells.use))
+            lab2[round(cumsum(table(cells.ident)[levels(cells.ident)])-table(cells.ident)[levels(cells.ident)]/2)+15]=levels(cells.ident)
+            row.lab2=gsub(".*_","",lab2)
+            orig.ident=factor(gsub("_.*","",cells.ident),levels=unique(gsub("_.*","",cells.ident)))
+            col.lab2=rep("",length(cells.use))
+            col.lab2[round(cumsum(table(orig.ident)[levels(orig.ident)])-table(orig.ident)[levels(orig.ident)]/2)+15]=levels(orig.ident)
+            colsep.use2=cumsum(table(orig.ident)[levels(orig.ident)]) # draw a line between datasets
+sidecol2=do.call(rbind,strsplit(as.character(cells.ident),"_"))
+sidecol2=cbind(sidecol2,sidecol2)
+for(rep in 1:length(unique(sidecol2[,1]))){
+a=unique(sidecol2[,1])[rep]
+sidecol2[which(sidecol2[,1]==a),2]<-rep
+}
+rlab2=rbind(c("white")[as.numeric(sidecol2[,1])],myBrewerPalette[as.numeric(sidecol2[,2])])
+clab2=cbind(rlab2[2,],rlab2[1,])
+rownames(rlab2)=c("","Cluster")
+colnames(clab2)=c("Cluster","")
+
+### modify color scheme in order to visualize Jaccard distance
+col.use2=redblue100[c(rep(c(41:100),each=10),rep(100,100000))]
+length(col.use2)
+
+### heatmap for Jaccard distance of germ cells ordered by 12 germ cell clusters
+jpeg(file=paste(dgename,"SNN_",res[resi],".jpeg",sep=""),height=3000,width=3000,res=300)
+par(mar=c(10,4,1,2),mgp=c(2.5, 1, 0))
+heatmap.3(data.use2,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use2,colsep = colsep.use2,rowsep=colsep.use2,sepcolor="black",sepwidth=c(0.01,0.01),RowSideColors=rlab2,ColSideColors=clab2,labCol=col.lab2,labRow=row.lab2,cexCol=2,cexRow=2,ColSideColorsSize = 1.5,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F,scale="none",margins=c(7,5))                    # symm=F,symkey=F,symbreaks=F,
+dev.off()
+# save as Figure S2A right panel
 
      
