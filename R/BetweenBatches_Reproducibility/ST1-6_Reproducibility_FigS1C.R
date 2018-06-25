@@ -150,7 +150,7 @@ library(parallel) # mclapply belongs to package parallel
 dge=JackStrawMC(dge,num.pc=40,num.replicate = 1000,do.print = TRUE,num.cores=4)
 print(Sys.time())
 # save jackstraw permutation to a new dge
-save(dge, file = paste("/home/qzm/data_DGE/MouseAdultTestis6_",dataset,"_2.Robj",sep=""))
+save(dge, file = paste("/home/qzm/data_DGE/MouseAdultTestis6_",dataset[i],"_2.Robj",sep=""))
 # plot p-value of top PCs from Jackstraw permuation
 jpeg(paste(dgefile,"dge_PCA_perm1k_topPCs13.jpeg",sep=""),height=3000,width=3000,res=300)
 JackStrawPlot(dge,PCs = 1:14,nCol=4)
