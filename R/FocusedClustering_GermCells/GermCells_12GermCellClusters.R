@@ -1,5 +1,5 @@
-### R script to generate 12 ordered germ cell clusters in Oct 2017 by Qianyi
-### Related to Figure 2 and S2: germ cells with >1k genes
+### R script to generate 12 ordered germ cell clusters in Fall 2017 by Qianyi
+### Related to Figure 2 and S2: germ cells (N=20,646) with >1k detected genes 
 
 ### load file path and libraries
 home="/scratch/junzli_flux/qzm/Dropseq_analysis/"
@@ -70,13 +70,13 @@ print(dim(dge@data))
 
 ### Re-Scale data!!! important because PCA uses scale.data
 dge=ScaleData(dge)
-dge24=dge
-save(dge,file=paste0(home,"data_DGE/24GermClusters1kgenes_ReScaled.Robj"))
 
 ### PCA for all germ cells with >1k genes using all genes
 print(Sys.time())
 dge <- PCA(dge, pc.genes = rownames(dge@data), do.print = TRUE, pcs.print = 5, genes.print = 5)
 print(Sys.time())
+
+dgefile="figAug2017_MouseAdultST24_ReCluster24GermClustersLargeCells1kgenes/"
 save(dge,file=paste0(home,"data_DGE/24GermClusters1kgenes_ReScaled.Robj"))
 dge24=dge
 
