@@ -1,4 +1,5 @@
-### R script in Oct 2017 by Qianyi
+### R script to generate 12 ordered germ cell clusters in Oct 2017 by Qianyi
+### Related to Figure 2A: PCA plot for germ cells with >1k genes
 
 ### load file path and libraries
 home="/scratch/junzli_flux/qzm/Dropseq_analysis/"
@@ -358,7 +359,7 @@ dge19HVG=dge
        
      
 
-######### Plot Fig2A on 10.7.2017
+######### Plot Figure 2A on 10.7.2017
 ### load PCA for all germ cells with >1k genes using HVG (dge24HVG)
 load(file=paste0(home,"data_DGE/24GermClusters1kgenes_ReScaled_HVG.Robj"))
 dge24HVG=dge
@@ -417,7 +418,7 @@ PCAPlot(dge,1,5,pt.size=1,do.label=T)
 PCAPlot(dge,1,6,pt.size=1,do.label=T)
 PCAPlot(dge,1,7,pt.size=1,do.label=T)
 dev.off()
-# save as Fig2A
+# save as Figure 2A
     
    
 
