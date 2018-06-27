@@ -1,5 +1,5 @@
 ### R script to generate 12 ordered germ cell clusters in Fall 2017 by Qianyi
-### Related to Figure 2 and S2: germ cells (N=20,646) with >1k detected genes 
+### Related to Figure 2 and S2A, and Table S3A: germ cells (N=20,646) with >1k detected genes 
 
 ### load file path and libraries
 home="/scratch/junzli_flux/qzm/Dropseq_analysis/"
@@ -424,7 +424,18 @@ PCAPlot(dge,1,6,pt.size=1,do.label=T)
 PCAPlot(dge,1,7,pt.size=1,do.label=T)
 dev.off()
 # save as Figure 2A
-    
+  
+                            
+######## Select markers for 12 germ cell clusters
+### 10.10.2017 analyze markers for 12 germ clusters using dge24HVG (SPG-4-5-new9clusters)
+dge=dge24HVG
+dge=SetAllIdent(dge,id="SPG45new9clusters")
+
+markersall=FindAllMarkers(dge,only.pos=TRUE,min.pct=0.2,min.diff.pct=0.2,thresh.use=log(2),test.use="bimod",do.print = TRUE)
+table(markersall$cluster)[levels(dge@ident)]
+write.table(markersall,paste0(home,"data_DGE/MouseAdultST24_MarkersAll_12GermClusterTrajectory_pct0.2_diffpct0.2_thresh2fold_10.10.2017.txt"),col.names=T,row.names=T,quote=F,sep="\t")
+### save as Table S3A
+                            
 
 ######### Visualize representative known markers for germ cell types in Figure 2C
 ### 11.28.2017 known germ cell markers 
