@@ -1,4 +1,4 @@
-### R script for analyzing merged 24 ST batches in June 2017 by Qianyi
+### R script for analyzing merged 24 ST batches in June 2017 by Qianyi, Related to Figure 1B and 2A
 
 ### load libraries
 library(Seurat)
