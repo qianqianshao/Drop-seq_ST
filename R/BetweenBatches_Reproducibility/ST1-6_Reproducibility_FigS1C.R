@@ -108,6 +108,7 @@ Sys.time()
 dge <- PCA(dge, pc.genes = rownames(dge@data), do.print = TRUE, pcs.print = 5, genes.print = 5)
 Sys.time()
 save(dge, file = paste0("data_DGE/MouseAdultTestis6_",dataset[i],".Robj"))
+dgelist[[i]]=dge
 
 ### visualize PC1-5
 pdf(paste(dgefile,"dge_PCA_all.pdf",sep=""),height=7.5,width=16)
@@ -141,12 +142,16 @@ abline(v=eigenvalue,col="red",lwd=2,lty=2)
 text(eigenvalue,0.4,col="red",paste(numPCs[i],"PCs"))
 legend("topright",legend=dataset[i],cex=1.5)
 dev.off()
-jpeg(paste(dgefile,"dge_PCA_perm100_topPCs",numPCs[i],".jpeg",sep=""),height=3000,width=3000,res=300)
-JackStrawPlot( dge,PCs = 1:(numPCs[i]+1),nCol=ceiling(sqrt(numPCs[i]) ) )
-dev.off()
-  
+}
+
 ### Jackstraw Permutation of 1k rounds
+library(Seurat)
+library(dplyr)
+library(Matrix)
 library(parallel) # mclapply belongs to package parallel
+for(i in 1:6){
+dgename=dgefile=paste("figMarch2017_MouseAdultTestis6/",dataset[i],"_",sep="")
+load(file = paste0("data_DGE/MouseAdultTestis6_",dataset[i],".Robj"))
 dge=JackStrawMC(dge,num.pc=40,num.replicate = 1000,do.print = TRUE,num.cores=4)
 print(Sys.time())
 # save jackstraw permutation to a new dge
@@ -155,13 +160,19 @@ save(dge, file = paste("/home/qzm/data_DGE/MouseAdultTestis6_",dataset[i],"_2.Ro
 jpeg(paste(dgefile,"dge_PCA_perm1k_topPCs13.jpeg",sep=""),height=3000,width=3000,res=300)
 JackStrawPlot(dge,PCs = 1:14,nCol=4)
 dev.off()
+}
   
 ### decided to use top 13 PCs for each of the 6 ST batches based on scree plot, density plot of eigenvalues, and Jackstraw permutation
 
 
 ###### Run tSNE using top 13 PCs
 numPCs=c(13,13,13,13,13,13)
+for(i in 1:6){
+dge=dgelist[[i]]
+dgename=dgefile=paste("figMarch2017_MouseAdultTestis6/",dataset[i],"_",sep="")
+### tSNE
 dge=RunTSNE(dge,dims.use = 1:numPCs[i],do.fast=T)    # max_iter=2000
+### plot tSNE
 pdf(paste(dgefile,"tSNE.pdf"),height=7.5,width=9)
 TSNEPlot(dge,pt.size = dge@data.info$nUMIperCell2)
 PCAPlot(dge,pt.size = dge@data.info$nUMIperCell2)
