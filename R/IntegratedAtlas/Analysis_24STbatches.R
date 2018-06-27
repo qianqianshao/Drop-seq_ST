@@ -180,9 +180,8 @@ dge <- AddMetaData(dge, percent.x, "percent.x")
 dge <- AddMetaData(dge, percent.y, "percent.y")
 
 # save dge for gene plot
-save(dge, file =paste0(home,"data_DGE/MouseAdultST24genesall.Robj"))
-load(file =paste0(home,"data_DGE/MouseAdultST24genesall.Robj"))
 dgeall=dge
+save(dgeall, file =paste0(home,"data_DGE/MouseAdultST24genesall.Robj"))
 
 # Average UMI, gene, %mito, %x, %y in each batch
 c(mean(dge@data.info$nUMI),
