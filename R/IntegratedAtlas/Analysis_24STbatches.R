@@ -995,6 +995,7 @@ dge@data.info$celltype2[which(dge@data.info$res.0.8 %in% round)] <- "RoundSperma
 dge@data.info$celltype2[which(dge@data.info$res.0.8 %in% elongating)] <- "Round/Elongating"
 
 table(dge@data.info$celltype2)[levels(dge@data.info$celltype2)]
+### these include a somatic cell group and 4 major germ cell types, the latter of which are colored in Fig1B
 
 save(dge, file = paste0(home,"data_DGE/MouseAdultST24genes",genefilter[1],".Robj"))
 dge20=dge
