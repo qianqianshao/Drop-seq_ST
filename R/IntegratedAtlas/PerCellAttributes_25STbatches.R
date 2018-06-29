@@ -1,5 +1,5 @@
 ### R script to calculate per-cell attributes for 35k cells of merged 25 ST batches in Dec 2017 by Qianyi
-### Related to Figure 1D, Figure S1F-G, and Table S1
+### Related to Figure 1D, Figure S1F-G, Table S1 and PerCellAttributes text file in GEO: GSE112393
 
 ### load libraries
 library(Seurat)
