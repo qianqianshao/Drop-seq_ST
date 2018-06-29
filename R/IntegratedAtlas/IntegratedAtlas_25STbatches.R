@@ -20,24 +20,24 @@ old24=as.matrix(old24)
 print(dim(old24)) # [1] 36979 33180
 old24=data.frame(GENE=rownames(old24),old24)
 old24[1:5,1:2]
-                       GENE ST1_ATCTTGCACATC
-0610005C13Rik 0610005C13Rik                0
-0610007P14Rik 0610007P14Rik                0
-0610009B22Rik 0610009B22Rik                6
-0610009E02Rik 0610009E02Rik                0
-0610009L18Rik 0610009L18Rik               11
+#                       GENE ST1_ATCTTGCACATC
+#0610005C13Rik 0610005C13Rik                0
+#0610007P14Rik 0610007P14Rik                0
+#0610009B22Rik 0610009B22Rik                6
+#0610009E02Rik 0610009E02Rik                0
+#0610009L18Rik 0610009L18Rik               11
 
 ### 2. load filtered cells and all detected genes for INT6 (somatic cells of new Sca1) dataset
 newSca1somatic=read.table(file=paste0(home,"data_DGE/92783/INT6Somatic_1453cells_25187genes.dge.txt"), row.names=1,header=T)
 newSca1somatic=data.frame(GENE=rownames(newSca1somatic),newSca1somatic)
 dim(newSca1somatic) # [1] 25187  1453+1
 newSca1somatic[1:5,1:2]
-                       GENE INT6_GATTAGGCCATA
-0610005C13Rik 0610005C13Rik                 1
-0610007P14Rik 0610007P14Rik                 0
-0610009B22Rik 0610009B22Rik                 0
-0610009E02Rik 0610009E02Rik                 0
-0610009L18Rik 0610009L18Rik                 1
+#                       GENE INT6_GATTAGGCCATA
+#0610005C13Rik 0610005C13Rik                 1
+#0610007P14Rik 0610007P14Rik                 0
+#0610009B22Rik 0610009B22Rik                 0
+#0610009E02Rik 0610009E02Rik                 0
+#0610009L18Rik 0610009L18Rik                 1
 
 ### 3. Merge 24 ST datasets with INT6 dataset 
 mouse=merge(old24,newSca1somatic,by="GENE",all=TRUE)
@@ -48,12 +48,12 @@ mouse[1:5,1:2]
 mouse=mouse[,-1]
 dim(mouse) # 37241 genes, 34633 cells
 mouse[1:5,1:2]
-              ST1_ATCTTGCACATC ST1_CCGCCTTAGCTN
-0610005C13Rik                0                0
-0610007P14Rik                0                0
-0610009B22Rik                6                3
-0610009E02Rik                0                0
-0610009L18Rik               11                6
+#              ST1_ATCTTGCACATC ST1_CCGCCTTAGCTN
+#0610005C13Rik                0                0
+#0610007P14Rik                0                0
+#0610009B22Rik                6                3
+#0610009E02Rik                0                0
+#0610009L18Rik               11                6
 
 write.table(mouse, file=paste0(home,"data_DGE/MouseAdultST25/mergedMouseAdultST25_34633cells_37241genes.dge.txt"), quote=FALSE, sep='\t',row.names=T, col.names=T)
 
@@ -292,8 +292,8 @@ print(c( length(unique(dge@data.info$res.0.1)),length(unique(dge@data.info$res.0
 table(dge@data.info$celltype2,dge@data.info$res.0.1)
 # cluster 5,6,8 and 9 cells are the same cells as in somatic group, cluster 0-4 and 7 are the same as cells as in germ group. 
 
-### decided to retain 1 somatic group and 4 major germ cell types in celltype2
-### do focused clustering for somatic subset of 25 ST datasets (N=5081 cells) 
+### decided to retain 1 somatic group and 4 major germ cell types stored in celltype2 for 25 ST datasets
+### do focused clustering for somatic subset (N=5081 cells) and focused clustering for germ cell subset separately
 
 ###### update Somatic Cell Types (New Somatic Cell Types from focused subset clustering of merged 25ST somatic cells) to metadata of merged 25 ST batches
 ### note: 11 major cell types = 4 major germ cell groups from 24 ST batches + 7 somatic cell types from re-clustering of all somatic cells of 25 ST batches
