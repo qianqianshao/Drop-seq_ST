@@ -1000,4 +1000,6 @@ table(dge@data.info$celltype2)[levels(dge@data.info$celltype2)]
 save(dge, file = paste0(home,"data_DGE/MouseAdultST24genes",genefilter[1],".Robj"))
 dge20=dge
 
+dgeall@data.info$celltype2=dge@data.info$celltype2
+save(dgeall, file =paste0(home,"data_DGE/MouseAdultST24genesall.Robj"))
 
