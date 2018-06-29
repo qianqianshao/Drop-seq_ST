@@ -1,4 +1,4 @@
-### R script to compare 6 ST batches on 03/22/2017 by Qianyi, related to Figure S1C
+### R script to compare 6 ST batches on 03/22/2017 by Qianyi, related to Figure S1B,C
 ### Unbiased Representation of Adult Mouse Seminferous Tubule (ST) - 6 ST batches
 
 ### load libraries
@@ -396,16 +396,40 @@ cc=cor(as.matrix(genecountsall),method="spearman")
 data.use=cc[levels,levels]
 col.use=redblue100
 
-### Plot Heatmap for rank correlation of 14 cluster centroids across each of the 6 ST batches
-# this is Figure S1C
-
+### Plot Heatmap for rank correlation of 14 cluster centroids across each of the 6 ST batches - Figure S1C
 pdf(file=paste(dgename,"Centroid_RankedCorrelation_indiv_14clusters_image.pdf",sep=""),height=5,width=5)
 par(mar=c(4,4,1,1),mgp=c(2.5, 1, 0))
 image(as.matrix(data.use),col=col.use,cex=1.2,cex.lab=1.3)
 dev.off()
-
 # add scale bar for color scale
 pdf(file=paste(dgename,"RankedCorrelation_norm_scalebar_centroid.pdf"))
 image(cbind(seq(0,1,0.01),seq(0,1,0.01)),col=col.use,cex.axis=2)
 dev.off()
-
+## save as Figure S1C
+                            
+###### Visualize individual batch of the 6 ST datasets in PC1-2 of merged 25 ST datasets - Figure S1B
+load(file =paste0(home,"data_DGE/MouseAdultST25Somatic.Robj"))
+dge25=dge
+dge <- SetAllIdent(dge, id = "celltype2")
+dge@ident=factor(dge@ident,levels=c("Somatic","Spermatogonia","Spermatocyte","RoundSpermatid","Elongating"))
+### color scheme
+library(RColorBrewer)
+myBrewerPalette <- c("gray60",brewer.pal(12,"Paired")[1:4]) # used this on 12/20/2017
+### Visualize each of the 6 ST batches colored by 5 major cell groups in PC1-2 space of merged 25 ST datasets
+# note: need to fix xlim and ylim
+myBrewerPalette <- c("gray60",brewer.pal(12,"Paired")[1:4]) # 1 
+sets=levels(dge@data.info$orig.ident)[1:6]
+plotset=NULL
+for(i in 1:length(sets)){
+set=sets[i]
+plotset[[i]]=PCAPlot(dge,1,2,do.return = TRUE,do.label=F,pt.size = 1,cells.use=rownames(dge@data.info)[which(gsub("_.*","",rownames(dge@data.info))==set)])
+}
+pdf(paste(dgefile,"PCA_6ST-SetPC2.pdf",sep=""),height=6.3,width=10)
+par(mar=c(1,1,3,1))
+MultiPlotList(plotset,cols = 3)
+dev.off()
+pdf(paste(dgefile,"PCA_6ST-SetPC2v.pdf",sep=""),height=10,width=7)
+par(mar=c(1,1,3,1))
+MultiPlotList(plotset,cols = 2)
+dev.off()
+## save as Figure S1B
