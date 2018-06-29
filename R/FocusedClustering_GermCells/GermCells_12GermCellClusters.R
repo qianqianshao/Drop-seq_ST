@@ -581,10 +581,11 @@ rownames(rlab)=c("","Cluster")
 colnames(clab)=c("Cluster","")
 
 ### color scheme
+redblue100<-rgb(read.table('/scratch/junzli_flux/qzm/Dropseq_analysis/data_DGE/redblue100.txt'),sep='\t',row.names=1,header=T))
 col.use=redblue100
 
 ### heatmap of rank correlation for 12 germ cell cluster centroids
-pdf(file=paste(dgename,"Centroid_RankedCorrelation_",res[resi],".pdf",sep=""),height=5.5,width=5)
+pdf(file=paste(dgename,"Centroid_RankCorrelation_",res[resi],".pdf",sep=""),height=5.5,width=5)
 par(mar=c(4,4,1,1),mgp=c(2.5, 1, 0))
 heatmap.3(data.use,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use,colsep = colsep.use,rowsep=colsep.use,sepcolor="black",sepwidth=c(0.001,0.001),RowSideColors=rlab,ColSideColors=clab,labCol=col.lab,labRow=row.lab,cexCol=0.8,cexRow=1,ColSideColorsSize = 1.5,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F, scale="none",margins=c(7,3))
 dev.off()
