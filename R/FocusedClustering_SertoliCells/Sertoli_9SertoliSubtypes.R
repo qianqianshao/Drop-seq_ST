@@ -29,6 +29,7 @@ PCAPlot(dge,1,3,cells.use=cells.use,do.return = TRUE,pt.size = 1,do.label=T)
 dev.off()
 
 ######### Focused clustering for Sertoli cells subset (N=2,099) on 6/28/2017
+dgefile="figJun2017_MouseAdultST24_ReCluster45/"
 ###### PCA for sertoli cells subset
 ### extract cells in Sertoli clusters
 dgetmp=SubsetData(dge,ident.use=sets[[j]])
@@ -186,6 +187,7 @@ dev.off()
 
  
 ######### Focused clustering for Sertoli cells with >1k genes (N=1,067) on 11/28/2017
+dgefile=dgename="/home/qzm/figNov2017_MouseAdultST24_ReCluster45largecells/"
 ### remove small cells in Sertoli subset: remove all cells <= 1000 genes
 j=2
   dge=dgelist[[1]]
