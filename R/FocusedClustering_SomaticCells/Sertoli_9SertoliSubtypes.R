@@ -1,5 +1,5 @@
 ### R script to generate 9 sertoli subtypes by Qianyi 
-### Related to Figure 6B,D, Figure S6A, and Table S6: sertoli cells (N=20,646) with >1k detected genes 
+### Related to Figure 6B,D, Figure S6A, and Table S6: sertoli cells (N=1,067) with >1k detected genes 
 
 ### load libraries
 library(Seurat)
@@ -269,7 +269,7 @@ table(dge@ident)
 ### cross-tabulation with 9 clusters from clustering of all sertoli cells
 table(dge@ident,dge@data,info$res.1order)
 
-### modify the cluster IDs for 9 sertoli subtypes
+### rename the cluster IDs for 9 sertoli subtypes
 id=as.numeric(dge@ident)
 names(id)=names(dge@ident)
 id[which(id==2)]<-"2A"
