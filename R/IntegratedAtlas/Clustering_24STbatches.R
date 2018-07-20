@@ -156,7 +156,7 @@ dge@data.info$orig.ident=factor(dge@data.info$orig.ident,levels=dataset)
 dge@ident=factor(dge@ident,levels=dataset)
 
 # add nUMIperCell to the dge datainfo
-dge <- AddMetaData(dge, nUMIperCell, "nUMIperCell")
+dge <- AddMetaData(dge, nUMIperCell, "nUMIperCell2")
 
 # add percent.mito to the dge datainfo
 mito.genes <- grep("^mt-", rownames(dge@data), value = T)
