@@ -396,61 +396,6 @@ which(markersneighbormean[,6] != markersneighbormean[,7])# make sure nothing
 write.table(markersneighbormean[,c(6,1:5,8,9)],paste0(home,"data_DGE/MarkersAll_Diff1Mean_MouseAdultST24_UMI20cell15_31clusters_ReCluster123cellsUMI1k_res.0.2order_diff_pct0.2_diffpct0.2_thresh2fold_3.5.2018.txt"),col.names=T,row.names=F,quote=F,sep="\t")
 
 ###### Heatmap for markers across 4 SPG Subtypes - Figure 4B 
-### 1. Heatmap for markers in all cells in SPG 1kUMIs 4 clusters
-redblue100<-rgb(read.table(paste0(home,"data_DGE/redblue100.txt"),sep='\t',row.names=1,header=T))
-markersall=read.table(paste0(home,"data_DGE/MouseAdultST24_MarkersAll_UMI20cell15_31clusters_ReCluster",setsname[j],"_",res[i],"_pct0_diffpct0_thresh1.5fold_clustersPC1-14_9.25.2017.txt"),header=T,row.names=1,stringsAsFactors=F)
-
-# note ploted is scaled.data (cell normalized + gene standardized) instead of normalized data
-dge=ScaleData(dge)
-dge=SetAllIdent(dge,id="res.0.2order")
-ident=dge@ident
-levels=levels(dge@ident)
-cells=sort(ident)
-cells.use=NULL
-for(i in 1:length(levels)){
-   set.seed(i)
-   tmp=cells[which(cells == levels[i])]
-   if(length(tmp)>0){
-      tmpname=sample(names(tmp),length(tmp),replace=FALSE)
-      cells.use=c(cells.use,tmpname)
-   }
-}
-cells.ident=as.factor(cells)
-names(cells.ident)=cells.use
-levels(cells.ident)=levels
-
-disp.min=-2.5;disp.max=2.5;draw.line=TRUE;
-            data.use2=dge@scale.data[markersall$gene,cells.use]
-            data.use2=minmax(data.use2,min=disp.min,max=disp.max)
-
-            lab2=rep("",length(cells.use))
-            lab2[round(cumsum(table(cells.ident)[levels(cells.ident)])-table(cells.ident)[levels(cells.ident)]/2)+15]=levels(cells.ident)
-            row.lab2=gsub(".*_","",lab2)
-            orig.ident=factor(gsub("_.*","",cells.ident),levels=unique(gsub("_.*","",cells.ident)))
-            col.lab2=rep("",length(cells.use))
-            col.lab2[round(cumsum(table(orig.ident)[levels(orig.ident)])-table(orig.ident)[levels(orig.ident)]/2)+5]=levels(orig.ident)
-            colsep.use2=cumsum(table(orig.ident)[levels(orig.ident)]) # draw a line between datasets
-
-sidecol2=do.call(rbind,strsplit(as.character(cells.ident),"_"))
-sidecol2=cbind(sidecol2,sidecol2)
-for(rep in 1:length(unique(sidecol2[,1]))){
-a=unique(sidecol2[,1])[rep]
-sidecol2[which(sidecol2[,1]==a),2]<-rep
-}
-
-rlab2=rbind(c("white")[as.numeric(sidecol2[,1])],myBrewerPalette[as.numeric(sidecol2[,2])])
-clab2=cbind(rlab2[2,],rlab2[1,])
-rownames(rlab2)=c("","Cell Type")
-colnames(clab2)=c("Cell Type","")
-
-col.use2=col.use
-
-jpeg(file=paste(dgename,"allcells_markersall_clab.jpeg",sep=""),height=3000,width=2800,res=300)
-par(mar=c(10,4,1,2),mgp=c(2.5, 1, 0))
-heatmap.3(data.use2,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use2,colsep = colsep.use2,sepcolor="black",sepwidth=c(0.01,0.01),ColSideColors=clab2,labCol=col.lab2,cexCol=1.5,cexRow=0.5,ColSideColorsSize = 3,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F,scale="none",margins=c(7,5))                    # symm=F,symkey=F,symbreaks=F,
-dev.off()
-
-###### 2. Heatmap for markers in centroid of SPG 1kUMIs 4 clusters - Figure S4B
 ### Calculate cluster centroid
 dge=SetAllIdent(dge,id="res.0.2order")
 ident=dge@ident
