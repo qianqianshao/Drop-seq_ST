@@ -1,5 +1,5 @@
 ### R script to analyze gene groups and infertility genes across 12 germ cell cluster centroids on 11/28/2017 by Jun
-### Related to Figure 3 and S3, and Table S3C: 6 gene groups and infertility genes
+### Related to Figure 3 and S3, and Table S3C-D: 6 gene groups and infertility genes
 
 ### load data
 setwd("C:/Users/junzli/Documents/Students/Qianyi/Hammoud/Centroid12")
