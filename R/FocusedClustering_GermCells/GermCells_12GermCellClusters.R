@@ -1,4 +1,4 @@
-### R script to generate 12 ordered germ cell clusters in Fall 2017 by Qianyi
+### R script to generate 12 ordered germ cell clusters (GC) in Fall 2017 by Qianyi
 ### Related to Figure 2 and S2A, and Table S3A: germ cells (N=20,646) with >1k detected genes 
 
 ### load file path and libraries
