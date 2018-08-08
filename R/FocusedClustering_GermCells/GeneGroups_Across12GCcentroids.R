@@ -4,7 +4,6 @@
 ### load data
 setwd("C:/Users/junzli/Documents/Students/Qianyi/Hammoud/Centroid12")
 sys.load.image(".RData",quiet=F)
-
 cen<-as.matrix(read.delim("Cen12_minus3.txt",header=T,row.names=1,sep="\t"))
 tot<-as.matrix(read.delim("Cen12_tot_minus3.txt",header=T,row.names=1,sep="\t"))
 > plot(cen[,1],tot[,1])
