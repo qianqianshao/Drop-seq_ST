@@ -1,4 +1,4 @@
-### R script to generate 6 or 12 gene groups for germ cells on 11/28/2017 by Jun
+### R script to analyze gene groups and infertility genes across 12 germ cell cluster centroids on 11/28/2017 by Jun
 ### Related to Figure 3 and S3, and Table S3C: 6 gene groups
 
 ### load data
