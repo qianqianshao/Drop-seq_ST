@@ -9,20 +9,19 @@ dge20=dge   # Gene Filter 1 (N=24482): genes >20totalUMIsOverAllCells & >15Cells
 table(dge@data.info[,52:53]) 
 # Cluster31SeriationOLO_GeneFilter1 is the reordered cluster ID 1-31
 # Cluster 8-31 are germ cells
-### Extract cells in 24 germ clusters
+### Extract germ cells
 cells.use=rownames(dge@data.info)[which(dge@data.info$Cluster31SeriationOLO_GeneFilter1>=8)]
 anno <- data.frame(V1=rownames(dge@data.info),V2=dge@data.info$Cluster31SeriationOLO_GeneFilter1,dge@data.info)[which(dge@data.info$Cluster31SeriationOLO_GeneFilter1>=8),]
 table(anno$V2)
 summary(anno$nGene)
 summary(anno$nUMI)
 anno=anno[,-c(10:48,65:66)]
-### change GermClusterID 8-31 to 1-24
 for(i in 1:24){
     anno$V2[which(anno$Cluster31SeriationOLO_GeneFilter1 == i+7)] <- i
 }
 anno$V2=factor(anno$V2,levels=1:24)
 table(anno$V2)
-### Remove cells with <=1000 Genes, because germ cells usually have more transcripts
+### Remove germ cells with <=1000 Genes, because germ cells tend to have more transcripts compared with somatic cells
 anno=anno[anno$nGene > 1000,]
 table(anno$V2)
 dim(anno)  # 20646 cells
@@ -64,7 +63,6 @@ HSMM <- newCellDataSet(as(umi_matrix, "sparseMatrix"),
                        phenoData = pd,
                        featureData = fd,,
                        expressionFamily=negbinomial.size())
-
 
 ## ----estimate_size_and_dispersion, eval=TRUE-----------------------------
 HSMM <- estimateSizeFactors(HSMM)
@@ -109,8 +107,9 @@ dev.off()
 
 
 ######### 3. Constructing Pseudotime Trajectories
-#### step 1: select genes that differ between clusters (recommended) 
-## clustering of cells using genes selected by unsupervised "dpFeature"!
+#### step 1: Choose genes that define progress
+## select genes that differ between clusters (recommended) 
+## clustering cells using genes selected by unsupervised "dpFeature"
 ## select superset of feature genes as genes expressed in at least 5% of all cells
 HSMM <- detectGenes(HSMM, min_expr = 0.1)
 fData(HSMM)$use_for_ordering <- fData(HSMM)$num_cells_expressed > 0.05 * ncol(HSMM)
@@ -122,15 +121,10 @@ pdf(paste0(file,"2.choosegenes_forclustering_24GermClusters.pdf"))
 plot_ordering_genes(HSMM)
 dev.off()
 ### perform PCA
+# change default nv=pcs.ompute=20, maxit=100, fastpath=TRUE, work=nv+7 to maxit=500,work=500,fastpath=FALSE for irlba
 pdf(paste0(file,"2.PCAvariance_24GermClusters.pdf"))
 plot_pc_variance_explained(HSMM, return_all = F,norm_method = "log")
 dev.off()
-# note: irlba computes few PC dimensions, the default is only pcs.compute=20
-# for over 20 PCs, need to increase maxit, fastpath=FALSE, or increase work
-# default nv=pcs.ompute=20, maxit=100, fastpath=TRUE, work=nv+7
-# change to maxit=500,work=500,fastpath=FALSE
-cds=HSMM; max_components = 100; norm_method = "log"; residualModelFormulaStr = NULL; pseudo_expr = NULL; 
-    return_all = F; use_existing_pc_variance = FALSE; verbose = FALSE
 
 ### perform tSNE
 HSMM <- reduceDimension(HSMM, max_components = 2, norm_method = 'log',num_dim = 5, reduction_method = 'tSNE', verbose = T)
@@ -198,16 +192,6 @@ dev.off()
 pData=pData(HSMM)
 write.table(pData,paste0(home,"data_DGE/monocle_24GermClusters_pData.txt"),sep="\t",quote=F,row.names=T,col.names=T)
 
-### compare louvain-jaccard clusters with monocle pseudotime
-cluster=pData(HSMM)$V2
-#cluster=pData(HSMM)$Cluster
-pseudotime.df=pData(HSMM)$Pseudotime
-names(cluster)=names(pseudotime.df)=pData(HSMM)$V1
-cluster <-cluster[match(names(pseudotime.df),names(cluster))]
-table(cluster,round(pseudotime.df,0))
-write.table(table(cluster,round(pseudotime.df,0)),"table.txt",quote=F,sep="\t",row.names=T,col.names=T)
-
-
 ### Finding Genes that Distinguish State
 diff_test_res <- differentialGeneTest(HSMM[HSMM_expressed_genes,],
                                              fullModelFormulaStr = '~State',
@@ -218,27 +202,64 @@ plot_pseudotime_heatmap(HSMM[sig_gene_names,],
                         cores = 8,
                         show_rownames = T)
 
-# use Seurat to search for markers against all others for 5 States
-# search Gene Ontology for 5 states
+# used Seurat FindMarkers to search for markers for each of the 5 States
+# searched Gene Ontology for 5 states
 
-###### visualize 12 germ cell clusters and markers - Related to Figure S2C right panel
-### plot 12 germ cell clusters
+###### visualize 12 germ cell clusters in Monocle pseudotime and markers - Related to Figure S2C top right panel
+### 12 ordered germ cell clusters obtained by Louvain-Jaccard clustering
+load(file=paste0(home,"data_DGE/24GermClusters1kgenes_ReScaled_HVG.Robj"))
+dge24HVG=dge
 which(rownames(pData(HSMM))!=rownames(dge24HVG@data.info))
 pData(HSMM)$SPG45new9clusters=dge24HVG@data.info$SPG45new9clusters
 file="figAug2017_MouseAdultST24_ReCluster24GermClustersLargeCells1kgenes/Monocle_"
-
-# use mannual color
+table(round(pData(HSMM)$Pseudotime,0),pData(HSMM)$SPG45new9clusters)
 library(RColorBrewer)
 myBrewerPalette=brewer.pal(12,"Paired")
-
+# use mannual color by +scale_color_manual(values=myBrewerPalette) in ggplot
 pdf(paste0(file,"2.trajectory_Pseudotime.pdf"),height=4.5,width=4)
 plot_cell_trajectory(HSMM, color_by = "Pseudotime",show_tree=FALSE,show_branch_points=FALSE,show_backbone=TRUE)
 dev.off()
-
+# save as Figure S2C top right panel 
 pdf(paste0(file,"2.trajectory_12Clusters_facetwrap.pdf"),width=6)
 plot_cell_trajectory(HSMM, color_by = "SPG45new9clusters",show_branch_points=FALSE) + facet_wrap(~SPG45new9clusters, nrow = 3)
 dev.off()
 
-table(round(pData(HSMM)$Pseudotime,0),pData(HSMM)$SPG45new9clusters)
-# save as Figure S2C right panel 
+### Visualize known markers for germ cells in Monocle
+markers=c("Zbtb16","Sall4","Sohlh1","Id4","Gfra1","Uchl1","Kit","Stra8","Prdm9","H2afx","Spo11","Hormad1","Piwil1","Sycp3","Spag6","Mns1","Tbpl1","Acrv1","Tssk1","Tnp1","Prm1","Pgk2","Hspa1l")
+HSMM_expressed_genes <-  row.names(subset(fData(HSMM),
+        num_cells_expressed >= 10))
+HSMM_filtered <- HSMM[HSMM_expressed_genes,]
+my_genes <- row.names(subset(fData(HSMM_filtered),
+                  gene_short_name %in% markers))
+cds_subset <- HSMM_filtered[my_genes,]
+pdf(paste0(file,"2.12Clusters_knownmarkers.pdf"),width=12)
+plot_genes_in_pseudotime(cds_subset, color_by = "SPG45new9clusters",ncol=5)
+dev.off()
+
+###### compare pseudotemporal ordering from Waterfall and Monocle with the 12 ordered germ cell (GC) clusters and SOM 20 clusters - Related to Figure S2C bottom panels
+setwd("C:/Users/qzm/Desktop/AdultMouseST/plot")
+monocle=read.table("data_DGE/Monocle_pseudotime.txt",header=T)
+waterfall=read.table("data_DGE/Waterfall_24GermClusters_pseudotime_12clusters.txt")
+som=read.table("data_DGE/SOM-20-1_NonSpgGermCells1kgenes_HVG.txt")
+gc=read.table("data_DGE/MouseAdultST24_12GermClusters_ClusterID.txt")
+
+gc$cb=rownames(gc)
+names(som)[1]=names(monocle)[1]="cb"
+waterfall$cb=rownames(waterfall)
+names(monocle)[2]="Monocle"
+waterfall=waterfall[,-c(1:2)]
+names(waterfall)[1]="Waterfall"
+som=som[,-c(3:4)]
+names(som)[2]="SOM-20-1"
+names(gc)[1]="GC1-12"
+
+a=Reduce(function(x,y)merge(x,y,all=TRUE,by="cb"),list(gc,som,waterfall,monocle))
+plot(a$SOM,a$Waterfall,col=rgb(1,0,0,0.1),pch=16,ylim=c(0.2,1))
+plot(a$GC,a$Waterfall,col=rgb(1,0,0,0.1),pch=16)
+# save as Figure S2C bottom left panel
+plot(a$SOM,a$Monocle,col=rgb(0,0,1,0.1),pch=16)
+plot(a$GC,a$Monocle,col=rgb(0,0,1,0.1),pch=16)
+# save as Figure S2C bottom right panel
+plot(a$Monocle,a$Waterfall,col=rgb(0,0,0,0.1),pch=16)
+plot(a$GC,a$SOM,col=rgb(0,0,0,0.1),pch=16,xlim=c(4,12))
 
