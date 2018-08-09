@@ -46,7 +46,7 @@ Akr1c14                  11    0    0
 # data format: log(mean(counts-per-10k)+1), 24947 genes with >20 UMIs and >15 cells (rows), 11 cell type centroids (columns)
 adult=read.table("MouseAdultST25_11celltypes_centroid_UMI20cell15genes.txt",header=T)
 dim(adult)   # [1] 24947    11
-### change data format to mean(counts-per-1M) for our 11 adult cell types
+### change data format to mean(counts-per-1M) for our 11 adult testis cell types
 adult<-expm1(adult)*100
 adult[1:2,]
               InnateLymphoid Macrophage Endothelial    Myoid      Leydig
@@ -106,7 +106,7 @@ summary(Fetal[,1:6])
  3rd Qu.:  17.973   3rd Qu.:  23.076  
  Max.   :4103.012   Max.   :4550.528
 
-###### calculate correlation between Stevant Fetal gonad and our adult testis cell type centroids using 2,711 overlapped markers
+###### calculate rank correlation between Stevant Fetal gonad and our adult testis cell type centroids using 2,711 overlapped markers
 all=cbind(Fetal[,1:6],adult)
 all[1:2,]
 #              C1        C2         C3        C4 C5         C6 InnateLymphoid
