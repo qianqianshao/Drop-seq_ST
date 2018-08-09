@@ -1,4 +1,4 @@
-### Comparison between Stevant Gonad 2018 data (6 somatic clusters) and our 11 adult cell types by Qianyi on 6/4/2018
+### Comparison between Stevant Gonad 2018 data (6 somatic clusters) and our adult testis data (11 cell types) by Qianyi on 6/4/2018
 ### Related to Figure S5B
 
 ### Stevant et al Cell Reports 2018 paper for Fetal Gonad 
@@ -21,25 +21,6 @@ setwd(home)
 ### load raw data from GSE97519
 raw=read.table("GSE97519_XY_NR5A1-eGFP_single-cell_fetal_gonads.txt.gz")
 dim(raw) # [1] 16459   400
-### check if markers for our unknown cell type are expressed in Fetal gonad
-for(i in 1:length(markers)){
-  print(length(which(raw[markers[i],]!=0)))
-}
-[1] 320
-[1] 314
-[1] 128
-[1] 334
-[1] 66
-[1] 350
-[1] 393
-[1] 269
-[1] 17
-[1] 68
-[1] 71
-[1] 34
-[1] 266
-[1] 390
-[1] 318
 
 ### load 6 cluster centroids from Table S2 of Stevant's 2018 Cell Reports paper
 # data format: mean(RPKM), 2802 markers (rows), 6 cluster centroids (columns)
