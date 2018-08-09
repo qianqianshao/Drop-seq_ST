@@ -1,1 +1,1 @@
-Here lists scripts used to analyze the Drop-seq data of adult mouse seminiferous tubule (N=35k Cells) and generate figures for my upcoming paper titled "A comprehensive roadmap of murine spermatogenesis defined by single-cell RNA-seq". 
+Here lists scripts used to analyze the Drop-seq data of adult mouse testis (N=35k Cells) and to generate figures and/or tables for our paper titled "A comprehensive roadmap of murine spermatogenesis defined by single-cell RNA-seq" published on DEVELOPMENTAL CELL in Aug 2018. 
