@@ -429,15 +429,15 @@ colnames(clab)=c("Cell Type","")
 redblue100<-rgb(read.table(paste0(home,"data_DGE/redblue100.txt"),sep='\t',row.names=1,header=T))
 col.use=redblue100
 ### plot heatmap of all markers for 11 major cell types - Figure 1C
-data.use=centroid.std
+data.use=centroid.std[markersall$gene,]
 row.lab=rownames(data.use)
-jpeg(file=paste0(dgename,"centroid_std_allgenes_cluster.jpeg"),res=300,height=6000,width=1600)
+jpeg(file=paste0(dgename,"centroid_std_markersall.jpeg"),res=300,height=2600,width=1600)
 par(mar=c(4,4,1,1),mgp=c(2.5, 1, 0))
-heatmap.3(na.omit(data.use),dendrogram="row",Rowv=TRUE,Colv=NA,trace = "none",col=col.use,colsep = colsep.use,sepcolor="black",sepwidth=c(0.001,0.001),ColSideColors=clab,labCol=col.lab,labRow=row.lab,cexCol=0.8,cexRow=0.3,ColSideColorsSize = 2,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F, scale="none",margins=c(7,3))
+heatmap.3(data.use,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use,colsep = colsep.use,sepcolor="black",sepwidth=c(0.001,0.001),ColSideColors=clab,labCol=col.lab,labRow=row.lab,cexCol=0.8,cexRow=0.3,ColSideColorsSize = 2,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F, scale="none",margins=c(7,3))
 dev.off()
-library(pheatmap)
-jpeg(file=paste0(dgefile,"clusterforgenes.jpeg"),res=300,height=10000,width=1600)
-pheatmap(testcor,cluster_cols=FALSE,col=col.use2)
+jpeg(file=paste0(dgename,"centroid_std_markersall2.jpeg"),res=300,height=1800,width=1600)
+par(mar=c(4,4,1,1),mgp=c(2.5, 1, 0))
+heatmap.3(data.use,dendrogram="none",Rowv=NA,Colv=NA,trace = "none",col=col.use,colsep = colsep.use,sepcolor="black",sepwidth=c(0.001,0.001),ColSideColors=clab,labCol=col.lab,labRow=row.lab,cexCol=0.8,cexRow=0.3,ColSideColorsSize = 2,RowSideColorsSize = 1.5,symm=F,symkey=F,symbreaks=F, scale="none",margins=c(7,3))
 dev.off()
 ### save as Figure 1C left panel
 
